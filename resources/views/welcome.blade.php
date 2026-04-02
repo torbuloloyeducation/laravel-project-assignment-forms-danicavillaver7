@@ -1,32 +1,53 @@
-<x-layout><br><br><br><br>    
-    <div class="border-b border-white/10 pb-12">
-      <h2 class="text-base/7 font-semibold text-white">Personal Information</h2>
-      <p class="mt-1 text-sm/6 text-gray-400">Use a permanent address where you can receive mail.</p>
+@extends('layouts.app')
 
-      <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-        <div class="sm:col-span-3">
-          <label for="first-name" class="block text-sm/6 font-medium text-white">First name</label>
-          <div class="mt-2">
-            <input id="first-name" type="text" name="first-name" autocomplete="given-name" class="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6" />
-          </div>
-        </div>
+@section('content')
+<h1>Welcome to My Laravel App</h1>
+<p>This is the homepage. Save your email below and see it immediately!</p>
 
-        <div class="sm:col-span-3">
-          <label for="last-name" class="block text-sm/6 font-medium text-white">Last name</label>
-          <div class="mt-2">
-            <input id="last-name" type="text" name="last-name" autocomplete="family-name" class="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6" />
-          </div>
-        </div>
+<form method="POST" action="/">
+    @csrf
+    <div>
+        <label>First Name</label>
+        <input type="text" name="first_name" value="{{ old('first_name') }}" required>
+    </div>
+    <div>
+        <label>Last Name</label>
+        <input type="text" name="last_name" value="{{ old('last_name') }}" required>
+    </div>
+    <div>
+        <label>Email</label>
+        <input type="email" name="email" value="{{ old('email') }}" required>
+    </div>
+    <button type="submit">Save</button>
+</form>
 
-        <div class="sm:col-span-4">
-          <label for="email" class="block text-sm/6 font-medium text-white">Email address</label>
-          <div class="mt-2">
-            <input id="email" type="email" name="email" autocomplete="email" class="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6" />
-          </div>
-        </div>
-        <div class="mt-10 flex items-center justify-end gap-x-6">
-    <button type="submit" class="rounded-md bg-green-500 px-3 py-2 text-sm font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">Save</button>
-  </div>
+@if(session('success'))
+    <p style="color: lightgreen">{{ session('success') }}</p>
+@endif
 
-    
-</x-layout>
+@if(session('error'))
+    <p style="color: red">{{ session('error') }}</p>
+@endif
+
+@if ($errors->any())
+    <ul style="color: red">
+        @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+        @endforeach
+    </ul>
+@endif
+
+<h3>Saved Emails:</h3>
+<ul>
+    @foreach(session('emails', []) as $index => $email)
+        <li>
+            {{ $email }}
+            <form method="POST" action="/emails/{{ $index }}" style="display:inline">
+                @csrf
+                @method('DELETE')
+                <button type="submit" style="background:red;color:white;">Delete</button>
+            </form>
+        </li>
+    @endforeach
+</ul>
+@endsection
